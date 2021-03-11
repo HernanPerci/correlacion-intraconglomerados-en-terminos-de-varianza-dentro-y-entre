@@ -1,0 +1,173 @@
+---
+title: 'TAREA : COEFICIENTE DE CORRELACIÓN'
+author: "Hernan Perci Nuñez Palomino - Oliver Polin Espejo - Sussan Villaorduña"
+date: "Ultima edicion `r format(Sys.time(), '%d %B %Y')`"
+output: 
+  word_document:
+    df_print: kable 
+    toc: yes
+    fig_width: 5
+    fig_height: 5
+    fig_caption: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, include = FALSE}
+
+library(tidyverse)
+
+```
+
+
+* En el siguiente problema verificar que $σ^2 = σ^2_b + σ^2_w$
+* Calcule $ρ$
+
+# Tabla de Datos
+
+```{r}
+
+tabla_de_datos <- function(N, M) {
+    set.seed(123)
+    n <- N*M # numero de elementos
+    datos <- matrix(c(5, 4, 3, 6, 2, 10, 8, 4, 3, 12, 10, 5), ncol = N)
+    colnames(datos) <- paste("conglomerado", 1:N) # asignar nombres a columnas
+    tabla <- as_tibble(datos)
+    tabla
+}
+tabla <- tabla_de_datos(N = 4, M = 3)
+tabla
+
+```
+
+
+# Verificacion que $σ^2 = σ^2_b + σ^2_w$
+
+## Media por elementos
+
+```{r}
+
+media <- function(N, M) {
+  U <- c(NA)
+  k <- 0
+  for (i in 1:N) {
+    for (j in 1:M) {
+      k <- k+1
+      U[k] <- tabla[[i]][j]
+    }
+  }
+  media_poblacional <- sum(U)/(N*M)
+  media_poblacional
+}
+media_por_elementos <- media(N = 4, M = 3)
+
+```
+
+La media por elementos es de `r media_por_elementos`
+
+## $σ^2_b$ varianza entre conglomerados
+
+```{r}
+
+varianza_entre <- function(N, M) {
+  U <- c(NA)
+  k <- 0
+    for (i in 1:N) {
+      k <- k+1
+      U[k] <- ((sum(tabla[[i]]) / M) - media_por_elementos)^2
+    }
+  varianza <- sum(U)/N
+  
+}
+
+varianza_entre_conglomerados <- varianza_entre(N = 4, M = 3)
+
+```
+
+La varianza entre conglomerados es de `r varianza_entre_conglomerados`
+
+## $σ^2_w$ varianza  dentro de conglomerados
+
+```{r}
+
+varianza_dentro <- function(N, M) {
+  U <- c(NA)
+  k <- 0
+  for (i in 1:N) {
+    for (j in 1:M) {
+      k <- k+1
+      U[k] <- (tabla[[i]][j] - (sum(tabla[[i]]) / M))^2
+    }
+  }
+  varianza_poblacional <- sum(U)/(N*M)
+  varianza_poblacional
+}
+varianza_dentro_conglomerados <- varianza_dentro(N = 4, M = 3)
+
+```
+
+La varianza dentro de conglomerados es de `r varianza_dentro_conglomerados`
+
+## $σ^2$ varianza
+
+```{r}
+
+varianza <- function(N, M) {
+  U <- c(NA)
+  k <- 0
+  for (i in 1:N) {
+    for (j in 1:M) {
+      k <- k+1
+      U[k] <- (tabla[[i]][j] - media_por_elementos)^2
+    }
+  }
+  varianza_poblacional <- sum(U)/(N*M)
+  varianza_poblacional
+}
+varianza_poblacional <- varianza(N = 4, M = 3)
+
+```
+
+La varianza poblacional es de `r varianza_poblacional`
+
+## Verificacion
+
+```{r eval=FALSE}
+
+varianza_1 <- round(varianza_poblacional, digits = 2)
+varianza_2 <- varianza_dentro_conglomerados + varianza_entre_conglomerados
+varianza_2 <- round(varianza_2, digits = 2)
+isTRUE(varianza_1 == varianza_2)
+
+```
+
+
+```{r, include = FALSE}
+
+varianza_1 <- round(varianza_poblacional, digits = 2)
+varianza_2 <- varianza_dentro_conglomerados + varianza_entre_conglomerados
+varianza_2 <- round(varianza_2, digits = 2)
+isTRUE(varianza_1 == varianza_2)
+
+```
+
+
+Nuestro resultado es verdadero `r isTRUE(varianza_1 == varianza_2)`. Se tuvo que redondear las cifras a dos digitos debido a que se generan problemas cuando se trabaja con muchos decimales.
+
+# Calcule $ρ$
+
+```{r}
+
+ro <- function(N, M) {
+  coef_corr <- (varianza_entre_conglomerados - (varianza_dentro_conglomerados / (M - 1))) / varianza_poblacional
+}
+
+coef_de_correlacion <- ro(N = 4, M = 3)
+
+```
+
+
+Nuestro coeficiente de correlacion es de `r coef_de_correlacion`
