@@ -1,6 +1,6 @@
 ---
 title: 'TAREA : COEFICIENTE DE CORRELACIÓN'
-author: "Hernan Perci Nuñez Palomino - Oliver Polin Espejo - Sussan Villaorduña"
+author: "Hernan Perci Nuñez Palomino"
 date: "Ultima edicion `r format(Sys.time(), '%d %B %Y')`"
 output: 
   word_document:
